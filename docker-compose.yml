@@ -27,6 +27,20 @@ services:
       - "8080:80"
     networks:
       - northwind_network
+    depends_on:
+      - postgres
+
+  northwind_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      - northwind_network
+    depends_on:
+      - postgres
 
 networks:
   northwind_network:
