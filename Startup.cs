@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NorthwindDemo.Repositories;
 
-namespace NorthwindApi
+namespace NorthwindDemo
 {
     public class Startup
     {
@@ -19,6 +21,9 @@ namespace NorthwindApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<NorthwindContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("NorthwindConnectionString")));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

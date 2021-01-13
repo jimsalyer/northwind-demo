@@ -3,12 +3,13 @@ version: "3"
 services:
 
   postgres:
+    container_name: northwind
     image: postgres
     restart: always
     environment:
       POSTGRES_USER: dbuser
       POSTGRES_PASSWORD: dbpassword
-      POSTGRES_DB: northwind_db
+      POSTGRES_DB: northwind_demo
     ports:
       - "5432:5432"
     volumes:
