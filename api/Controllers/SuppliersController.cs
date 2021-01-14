@@ -15,9 +15,9 @@ namespace NorthwindApi.Controllers
     public class SuppliersController : ControllerBase
     {
         private readonly NorthwindContext _context;
-        private readonly SieveProcessor _sieveProcessor;
+        private readonly ISieveProcessor _sieveProcessor;
 
-        public SuppliersController(NorthwindContext context, SieveProcessor sieveProcessor)
+        public SuppliersController(NorthwindContext context, ISieveProcessor sieveProcessor)
         {
             _context = context;
             _sieveProcessor = sieveProcessor;

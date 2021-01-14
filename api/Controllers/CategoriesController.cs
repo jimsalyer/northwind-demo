@@ -15,9 +15,9 @@ namespace NorthwindApi.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly NorthwindContext _context;
-        private readonly SieveProcessor _sieveProcessor;
+        private readonly ISieveProcessor _sieveProcessor;
 
-        public CategoriesController(NorthwindContext context, SieveProcessor sieveProcessor)
+        public CategoriesController(NorthwindContext context, ISieveProcessor sieveProcessor)
         {
             _context = context;
             _sieveProcessor = sieveProcessor;
