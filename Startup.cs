@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NorthwindDemo.Repositories;
+using Sieve.Services;
 
 namespace NorthwindDemo
 {
@@ -25,10 +26,13 @@ namespace NorthwindDemo
                 options.UseNpgsql(Configuration.GetConnectionString("NorthwindConnectionString")));
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Northwind API", Version = "v1" });
             });
+
+            services.AddScoped<SieveProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
