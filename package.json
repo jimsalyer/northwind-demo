@@ -1,0 +1,11 @@
+{
+  "name": "northwind-demo",
+  "version": "1.0.0",
+  "description": "Playground for web technologies using a PostgreSQL version of the Northwind database",
+  "scripts": {
+    "api-start": "cd ./api && dotnet run",
+    "api-watch": "cd ./api && dotnet watch run",
+    "db-start": "cd ./db && docker-compose up -d",
+    "db-stop": "cd ./db && docker-compose down -v"
+  }
+}

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Sieve.Attributes;
 
-namespace NorthwindDemo.Models
+namespace NorthwindApi.Models
 {
     public class Category
     {

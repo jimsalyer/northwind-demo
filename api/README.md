@@ -1,38 +1,22 @@
-# Northwind Demo
+# Northwind Demo API
 
-Playground for web technologies using a PostgreSQL version of the Northwind database
-
-## Database
-
-### Start
+## Start
 
 ```shell-script
-npm run db-start
+dotnet run
 ```
 
-### Stop
+## Start in Watch Mode
 
 ```shell-script
-npm run db-stop
+dotnet watch run
 ```
 
-## API
-
-### Start
-
-```shell-script
-npm run api-start
-```
-
-### Start in Watch Mode
-
-```shell-script
-npm run api-watch
-```
-
-### Run
+## Access the API
 
 Enter `http://localhost:5000/swagger` in your browser.
+
+## Filtering and Sorting
 
 ### Query Parameters
 

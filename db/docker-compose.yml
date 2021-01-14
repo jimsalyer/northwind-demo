@@ -13,8 +13,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./database/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/2_data.sql
     networks:
       - northwind_network
 

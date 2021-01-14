@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NorthwindDemo.Models
+namespace NorthwindApi.Models
 {
     public class Supplier
     {

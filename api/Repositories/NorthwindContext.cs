@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using NorthwindDemo.Models;
+using NorthwindApi.Models;
 
-namespace NorthwindDemo.Repositories
+namespace NorthwindApi.Repositories
 {
     public class NorthwindContext : DbContext
     {

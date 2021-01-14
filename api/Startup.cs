@@ -5,10 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NorthwindDemo.Repositories;
+using NorthwindApi.Repositories;
 using Sieve.Services;
 
-namespace NorthwindDemo
+namespace NorthwindApi
 {
     public class Startup
     {

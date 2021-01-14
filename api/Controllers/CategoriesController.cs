@@ -3,12 +3,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NorthwindDemo.Models;
-using NorthwindDemo.Repositories;
+using NorthwindApi.Models;
+using NorthwindApi.Repositories;
 using Sieve.Models;
 using Sieve.Services;
 
-namespace NorthwindDemo.Controllers
+namespace NorthwindApi.Controllers
 {
     [ApiController]
     [Route("api/categories")]
