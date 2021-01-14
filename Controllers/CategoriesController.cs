@@ -24,10 +24,11 @@ namespace NorthwindDemo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Category>> GetAll(string sorts)
+        public ActionResult<IEnumerable<Category>> GetAll(string filters, string sorts)
         {
             var sieveModel = new SieveModel
             {
+                Filters = filters,
                 Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "categoryName"
             };
 
@@ -110,7 +111,7 @@ namespace NorthwindDemo.Controllers
 
         [HttpGet("{id}/products")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<Product>> GetProducts(int id, string sorts)
+        public ActionResult<IEnumerable<Product>> GetProducts(int id, string filters, string sorts)
         {
             var category = _context.Categories
                 .AsNoTracking()
@@ -120,6 +121,7 @@ namespace NorthwindDemo.Controllers
             {
                 var sieveModel = new SieveModel
                 {
+                    Filters = filters,
                     Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "productName"
                 };
 

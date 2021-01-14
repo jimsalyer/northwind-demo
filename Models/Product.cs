@@ -13,30 +13,32 @@ namespace NorthwindDemo.Models
 
         [Required]
         [StringLength(40)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public string ProductName { get; set; }
 
         [Required]
         [StringLength(20)]
+        [Sieve(CanFilter = true)]
         public string QuantityPerUnit { get; set; }
 
         [Range(0, double.MaxValue)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public double UnitPrice { get; set; }
 
         [Range(0, int.MaxValue)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public int UnitsInStock { get; set; }
 
         [Range(0, int.MaxValue)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public int UnitsOnOrder { get; set; }
 
         [Range(0, int.MaxValue)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public int ReorderLevel { get; set; }
 
         [Range(0, 1)]
+        [Sieve(CanFilter = true)]
         public int Discontinued { get; set; }
     }
 }

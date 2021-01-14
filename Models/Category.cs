@@ -9,7 +9,7 @@ namespace NorthwindDemo.Models
 
         [Required]
         [StringLength(15)]
-        [Sieve(CanSort = true)]
+        [Sieve(CanFilter = true, CanSort = true)]
         public string CategoryName { get; set; }
 
         public string Description { get; set; }
