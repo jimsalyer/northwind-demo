@@ -19,8 +19,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\api\NorthwindApi.csproj" />
-  </ItemGroup>
-
 </Project>

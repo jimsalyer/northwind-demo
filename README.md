@@ -4,6 +4,8 @@ Playground for web technologies using a PostgreSQL version of the Northwind data
 
 ## Database
 
+View The Database's README [here](./db/README.md)
+
 ### Start
 
 ```shell-script
