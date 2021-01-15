@@ -5,8 +5,12 @@
   "scripts": {
     "api-start": "cd ./api && dotnet run -p NorthwindApi",
     "api-test": "cd ./api && dotnet test",
-    "api-watch": "cd ./api && dotnet watch run -p NorthwindApi",
+    "api-watch": "cd ./api && dotnet watch -p NorthwindApi run",
     "db-start": "cd ./db && docker-compose up -d",
-    "db-stop": "cd ./db && docker-compose down -v"
+    "db-stop": "cd ./db && docker-compose down -v",
+    "install": "cd ./api && dotnet restore",
+    "start": "npm run db-start && npm run api-start",
+    "test": "npm run api-test",
+    "watch": "npm run db-start && npm run api-watch"
   }
 }
