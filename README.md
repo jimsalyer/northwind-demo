@@ -33,3 +33,13 @@ npm run api-start
 ```shell-script
 npm run api-watch
 ```
+
+## API Tests
+
+View The API Tests' README [here](./api-test/README.md)
+
+### Start
+
+```shell-script
+npm run api-test
+```
