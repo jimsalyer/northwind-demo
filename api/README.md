@@ -1,15 +1,23 @@
 # Northwind Demo API
 
+ASP.Net Core Web API and Tests for interacting with a PostgreSQL version of the Northwind database
+
 ## Start
 
 ```shell-script
-dotnet run
+dotnet run -p NorthwindApi
 ```
 
 ## Start in Watch Mode
 
 ```shell-script
-dotnet watch run
+dotnet watch run -p NorthwindApi
+```
+
+## Run Tests
+
+```shell-script
+dotnet test
 ```
 
 ## Access the API

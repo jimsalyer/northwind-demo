@@ -34,11 +34,7 @@ npm run api-start
 npm run api-watch
 ```
 
-## API Tests
-
-View The API Tests' README [here](./api-test/README.md)
-
-### Start
+### Run Tests
 
 ```shell-script
 npm run api-test
