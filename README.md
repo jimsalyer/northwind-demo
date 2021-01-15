@@ -2,6 +2,12 @@
 
 Playground for web technologies using a PostgreSQL version of the Northwind database
 
+## Requirements
+
+- [Node (for NPM scripts in `package.json`)](https://nodejs.org/en/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [.Net SDK (version 5.0.2 or above)](https://dotnet.microsoft.com/download/dotnet-core)
+
 ## Database
 
 View The Database's README [here](./db/README.md)
