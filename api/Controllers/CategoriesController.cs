@@ -1,12 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NorthwindApi.Models;
-using NorthwindApi.Repositories;
-using Sieve.Models;
-using Sieve.Services;
+using NorthwindApi.Services;
 
 namespace NorthwindApi.Controllers
 {
@@ -14,38 +10,24 @@ namespace NorthwindApi.Controllers
     [Route("api/categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly NorthwindContext _context;
-        private readonly ISieveProcessor _sieveProcessor;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesController(NorthwindContext context, ISieveProcessor sieveProcessor)
+        public CategoriesController(CategoryService categoryService)
         {
-            _context = context;
-            _sieveProcessor = sieveProcessor;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Category>> GetAll(string filters, string sorts)
         {
-            var sieveModel = new SieveModel
-            {
-                Filters = filters,
-                Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "categoryName"
-            };
-
-            var categories = _context.Categories?.AsNoTracking();
-            var categoriesResult = _sieveProcessor.Apply(sieveModel, categories);
-
-            return categoriesResult.ToList();
+            return _categoryService.ListCategories(filters, sorts);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Category> GetById(int id)
         {
-            var category = _context.Categories
-                .AsNoTracking()
-                .FirstOrDefault(c => c.CategoryId == id);
-
+            var category = _categoryService.GetCategory(id);
             if (category != null)
             {
                 return category;
@@ -56,15 +38,11 @@ namespace NorthwindApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Category> Create(Category category)
+        public ActionResult<Category> Create(CategoryDto categoryDto)
         {
             if (ModelState.IsValid)
             {
-                category.CategoryId = _context.Categories.Any() ? _context.Categories.Max(c => c.CategoryId) + 1 : 1;
-
-                _context.Categories.Add(category);
-                _context.SaveChanges();
-
+                var category = _categoryService.CreateCategory(categoryDto);
                 return CreatedAtAction(nameof(GetById), new { id = category.CategoryId }, category);
             }
             return BadRequest();
@@ -73,37 +51,27 @@ namespace NorthwindApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Category> Update(int id, Category category)
+        public ActionResult<Category> Update(int id, CategoryDto categoryDto)
         {
-            var existingCategory = _context.Categories.Find(id);
-            if (existingCategory != null)
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid && category.CategoryId == id)
+                var category = _categoryService.UpdateCategory(id, categoryDto);
+                if (category != null)
                 {
-                    existingCategory.CategoryName = category.CategoryName;
-                    existingCategory.Description = category.Description;
-                    existingCategory.Picture = category.Picture;
-
-                    _context.Categories.Update(existingCategory);
-                    _context.SaveChanges();
-
-                    return existingCategory;
+                    return category;
                 }
-                return BadRequest();
+                return NotFound();
             }
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Category> Delete(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = _categoryService.DeleteCategory(id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
-                _context.SaveChanges();
-
                 return category;
             }
             return NotFound();
@@ -113,25 +81,10 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<Product>> GetProducts(int id, string filters, string sorts)
         {
-            var category = _context.Categories
-                .AsNoTracking()
-                .FirstOrDefault(c => c.CategoryId == id);
-
-            if (category != null)
+            var products = _categoryService.ListProducts(id, filters, sorts);
+            if (products != null)
             {
-                var sieveModel = new SieveModel
-                {
-                    Filters = filters,
-                    Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "productName"
-                };
-
-                var products = _context.Products
-                    .AsNoTracking()
-                    .Where(p => p.CategoryId == id);
-
-                var productsResult = _sieveProcessor.Apply(sieveModel, products);
-
-                return productsResult.ToList();
+                return products;
             }
             return NotFound();
         }

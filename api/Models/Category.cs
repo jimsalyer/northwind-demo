@@ -1,15 +1,12 @@
-using System.ComponentModel.DataAnnotations;
-using Sieve.Attributes;
+using AutoMapper;
 
 namespace NorthwindApi.Models
 {
+    [AutoMap(typeof(CategoryDto))]
     public class Category
     {
         public int CategoryId { get; set; }
 
-        [Required]
-        [StringLength(15)]
-        [Sieve(CanFilter = true, CanSort = true)]
         public string CategoryName { get; set; }
 
         public string Description { get; set; }

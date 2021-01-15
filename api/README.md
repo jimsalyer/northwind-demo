@@ -16,8 +16,6 @@ dotnet watch run
 
 Enter `http://localhost:5000/swagger` in your browser.
 
-## Filtering and Sorting
-
 ### Query Parameters
 
 - `sorts` is a comma-delimited ordered list of property names to sort by. Adding a - before the name switches to sorting descendingly.

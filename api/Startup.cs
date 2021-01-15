@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NorthwindApi.Repositories;
+using NorthwindApi.Services;
 using Sieve.Services;
 
 namespace NorthwindApi
@@ -25,14 +27,19 @@ namespace NorthwindApi
             services.AddDbContext<NorthwindContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("NorthwindConnectionString")));
 
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddScoped<SieveProcessor>();
+
+            services.AddTransient<CategoryService>();
+            services.AddTransient<SupplierService>();
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Northwind API", Version = "v1" });
             });
-
-            services.AddScoped<SieveProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

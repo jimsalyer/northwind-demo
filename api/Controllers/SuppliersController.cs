@@ -1,12 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NorthwindApi.Models;
-using NorthwindApi.Repositories;
-using Sieve.Models;
-using Sieve.Services;
+using NorthwindApi.Services;
 
 namespace NorthwindApi.Controllers
 {
@@ -14,38 +10,24 @@ namespace NorthwindApi.Controllers
     [Route("api/suppliers")]
     public class SuppliersController : ControllerBase
     {
-        private readonly NorthwindContext _context;
-        private readonly ISieveProcessor _sieveProcessor;
+        private readonly SupplierService _supplierService;
 
-        public SuppliersController(NorthwindContext context, ISieveProcessor sieveProcessor)
+        public SuppliersController(SupplierService supplierService)
         {
-            _context = context;
-            _sieveProcessor = sieveProcessor;
+            _supplierService = supplierService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Supplier>> GetAll(string filters, string sorts)
         {
-            var sieveModel = new SieveModel
-            {
-                Filters = filters,
-                Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "companyName"
-            };
-
-            var suppliers = _context.Suppliers?.AsNoTracking();
-            var suppliersResult = _sieveProcessor.Apply(sieveModel, suppliers);
-
-            return suppliersResult.ToList();
+            return _supplierService.ListSuppliers(filters, sorts);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Supplier> GetById(int id)
         {
-            var supplier = _context.Suppliers
-                .AsNoTracking()
-                .FirstOrDefault(s => s.SupplierId == id);
-
+            var supplier = _supplierService.GetSupplier(id);
             if (supplier != null)
             {
                 return supplier;
@@ -56,15 +38,11 @@ namespace NorthwindApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Category> Create(Supplier supplier)
+        public ActionResult<Category> Create(SupplierDto supplierDto)
         {
             if (ModelState.IsValid)
             {
-                supplier.SupplierId = _context.Suppliers.Any() ? _context.Suppliers.Max(c => c.SupplierId) + 1 : 1;
-
-                _context.Suppliers.Add(supplier);
-                _context.SaveChanges();
-
+                var supplier = _supplierService.CreateSupplier(supplierDto);
                 return CreatedAtAction(nameof(GetById), new { id = supplier.SupplierId }, supplier);
             }
             return BadRequest();
@@ -73,45 +51,27 @@ namespace NorthwindApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Supplier> Update(int id, Supplier supplier)
+        public ActionResult<Supplier> Update(int id, SupplierDto supplierDto)
         {
-            var existingSupplier = _context.Suppliers.Find(id);
-            if (existingSupplier != null)
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid && supplier.SupplierId == id)
+                var supplier = _supplierService.UpdateSupplier(id, supplierDto);
+                if (supplier != null)
                 {
-                    existingSupplier.CompanyName = supplier.CompanyName;
-                    existingSupplier.ContactName = supplier.ContactName;
-                    existingSupplier.ContactTitle = supplier.ContactTitle;
-                    existingSupplier.Address = supplier.Address;
-                    existingSupplier.City = supplier.City;
-                    existingSupplier.Region = supplier.Region;
-                    existingSupplier.PostalCode = supplier.PostalCode;
-                    existingSupplier.Country = supplier.Country;
-                    existingSupplier.Phone = supplier.Phone;
-                    existingSupplier.Fax = supplier.Fax;
-                    existingSupplier.Homepage = supplier.Homepage;
-
-                    _context.Suppliers.Update(existingSupplier);
-                    _context.SaveChanges();
-
-                    return existingSupplier;
+                    return supplier;
                 }
-                return BadRequest();
+                return NotFound();
             }
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Supplier> Delete(int id)
         {
-            var supplier = _context.Suppliers.Find(id);
+            var supplier = _supplierService.DeleteSupplier(id);
             if (supplier != null)
             {
-                _context.Suppliers.Remove(supplier);
-                _context.SaveChanges();
-
                 return supplier;
             }
             return NotFound();
@@ -121,25 +81,10 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<Product>> GetProducts(int id, string filters, string sorts)
         {
-            var supplier = _context.Suppliers
-                .AsNoTracking()
-                .FirstOrDefault(c => c.SupplierId == id);
-
-            if (supplier != null)
+            var products = _supplierService.ListProducts(id, filters, sorts);
+            if (products != null)
             {
-                var sieveModel = new SieveModel
-                {
-                    Filters = filters,
-                    Sorts = !string.IsNullOrWhiteSpace(sorts) ? sorts : "productName"
-                };
-
-                var products = _context.Products
-                    .AsNoTracking()
-                    .Where(p => p.SupplierId == id);
-
-                var productsResult = _sieveProcessor.Apply(sieveModel, products);
-
-                return productsResult.ToList();
+                return products;
             }
             return NotFound();
         }
