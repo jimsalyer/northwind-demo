@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using NorthwindApi;
 using NorthwindApi.Models;
 using Xunit;
@@ -34,14 +33,12 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task GetAll_ReturnsSupplierList()
+        public async Task GetAll_ReturnsListOfSuppliers()
         {
             var response = await _client.GetAsync("/api/suppliers");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var suppliers = JsonConvert.DeserializeObject<IEnumerable<Supplier>>(
-                await response.Content.ReadAsStringAsync()
-            );
+            var suppliers = await response.Content.ReadFromJsonAsync<IEnumerable<Supplier>>();
             suppliers.Should().HaveCountGreaterThan(0);
         }
 
@@ -51,9 +48,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await _client.GetAsync("/api/suppliers/1");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var supplier = JsonConvert.DeserializeObject<Supplier>(
-                await response.Content.ReadAsStringAsync()
-            );
+            var supplier = await response.Content.ReadFromJsonAsync<Supplier>();
             supplier.Should().NotBeNull();
         }
 
@@ -106,11 +101,9 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await _client.PutAsJsonAsync($"/api/suppliers/{createResult.Supplier.SupplierId}", supplierDto);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var supplier = JsonConvert.DeserializeObject<Supplier>(
-                await response.Content.ReadAsStringAsync()
-            );
-
+            var supplier = await response.Content.ReadFromJsonAsync<Supplier>();
             await DeleteTestSupplier(supplier.SupplierId);
+
             supplier.SupplierId.Should().Be(createResult.Supplier.SupplierId);
             supplier.CompanyName.Should().Be(supplierDto.CompanyName);
             supplier.ContactName.Should().Be(supplierDto.ContactName);
@@ -150,10 +143,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await DeleteTestSupplier(createResult.Supplier.SupplierId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var supplier = JsonConvert.DeserializeObject<Supplier>(
-                await response.Content.ReadAsStringAsync()
-            );
-
+            var supplier = await response.Content.ReadFromJsonAsync<Supplier>();
             supplier.SupplierId.Should().Be(createResult.Supplier.SupplierId);
             supplier.CompanyName.Should().Be(supplierDto.CompanyName);
             supplier.ContactName.Should().Be(supplierDto.ContactName);
@@ -172,6 +162,23 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
+        [Fact]
+        public async Task GetProducts_WithValidId_ReturnsListOfProductsFromSupplier()
+        {
+            var response = await _client.GetAsync("/api/suppliers/1/products");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var products = await response.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+            products.Should().HaveCountGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task GetProducts_WithInvalidId_ReturnsNotFoundResponse()
+        {
+            var response = await _client.GetAsync("/api/suppliers/999/products");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
         private async Task<(HttpResponseMessage, Supplier)> CreateTestSupplier(SupplierDto supplierDto)
         {
             var response = await _client.PostAsJsonAsync("/api/suppliers", supplierDto);
@@ -179,9 +186,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                supplier = JsonConvert.DeserializeObject<Supplier>(
-                    await response.Content.ReadAsStringAsync()
-                );
+                supplier = await response.Content.ReadFromJsonAsync<Supplier>();
             }
             return (response, supplier);
         }

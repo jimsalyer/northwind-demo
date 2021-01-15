@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using NorthwindApi;
 using NorthwindApi.Models;
 using Xunit;
@@ -28,14 +27,12 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task GetAll_ReturnsCategoryList()
+        public async Task GetAll_ReturnsListOfCategories()
         {
             var response = await _client.GetAsync("/api/categories");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var categories = JsonConvert.DeserializeObject<IEnumerable<Category>>(
-                await response.Content.ReadAsStringAsync()
-            );
+            var categories = await response.Content.ReadFromJsonAsync<IEnumerable<Category>>();
             categories.Should().HaveCountGreaterThan(0);
         }
 
@@ -45,9 +42,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await _client.GetAsync("/api/categories/1");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var category = JsonConvert.DeserializeObject<Category>(
-                await response.Content.ReadAsStringAsync()
-            );
+            var category = await response.Content.ReadFromJsonAsync<Category>();
             category.Should().NotBeNull();
         }
 
@@ -94,11 +89,9 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await _client.PutAsJsonAsync($"/api/categories/{createResult.Category.CategoryId}", categoryDto);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var category = JsonConvert.DeserializeObject<Category>(
-                await response.Content.ReadAsStringAsync()
-            );
-
+            var category = await response.Content.ReadFromJsonAsync<Category>();
             await DeleteTestCategory(category.CategoryId);
+
             category.CategoryId.Should().Be(createResult.Category.CategoryId);
             category.CategoryName.Should().Be(categoryDto.CategoryName);
             category.Description.Should().Be(categoryDto.Description);
@@ -132,10 +125,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             var response = await DeleteTestCategory(createResult.Category.CategoryId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var category = JsonConvert.DeserializeObject<Category>(
-                await response.Content.ReadAsStringAsync()
-            );
-
+            var category = await response.Content.ReadFromJsonAsync<Category>();
             category.CategoryId.Should().Be(createResult.Category.CategoryId);
             category.CategoryName.Should().Be(categoryDto.CategoryName);
             category.Description.Should().Be(categoryDto.Description);
@@ -148,6 +138,23 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
+        [Fact]
+        public async Task GetProducts_WithValidId_ReturnsListOfProductsInCategory()
+        {
+            var response = await _client.GetAsync("/api/categories/1/products");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var products = await response.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+            products.Should().HaveCountGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task GetProducts_WithInvalidId_ReturnsNotFoundResponse()
+        {
+            var response = await _client.GetAsync("/api/categories/999/products");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
         private async Task<(HttpResponseMessage, Category)> CreateTestCategory(CategoryDto categoryDto)
         {
             var response = await _client.PostAsJsonAsync("/api/categories", categoryDto);
@@ -155,9 +162,7 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                category = JsonConvert.DeserializeObject<Category>(
-                    await response.Content.ReadAsStringAsync()
-                );
+                category = await response.Content.ReadFromJsonAsync<Category>();
             }
             return (response, category);
         }
