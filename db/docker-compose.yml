@@ -2,8 +2,7 @@ version: "3"
 
 services:
 
-  postgres:
-    container_name: northwind
+  db_engine:
     image: postgres
     restart: always
     environment:
@@ -13,24 +12,24 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./data.sql:/docker-entrypoint-initdb.d/2_data.sql
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./scripts/data.sql:/docker-entrypoint-initdb.d/2_data.sql
     networks:
-      - northwind_network
+      - db_network
 
-  pgadmin:
+  db_admin:
     image: dpage/pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: dbadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: dbpassword
     ports:
       - "8080:80"
     networks:
-      - northwind_network
+      - db_network
     depends_on:
-      - postgres
+      - db_engine
 
 networks:
-  northwind_network:
+  db_network:
     driver: bridge
