@@ -43,5 +43,10 @@ namespace NorthwindApi.Models
         public string Fax { get; set; }
 
         public string Homepage { get; set; }
+
+        public SupplierDto Clone()
+        {
+            return (SupplierDto)MemberwiseClone();
+        }
     }
 }

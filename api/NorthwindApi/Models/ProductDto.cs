@@ -38,5 +38,10 @@ namespace NorthwindApi.Models
         [Range(0, 1)]
         [Sieve(CanFilter = true)]
         public int Discontinued { get; set; }
+
+        public ProductDto Clone()
+        {
+            return (ProductDto)MemberwiseClone();
+        }
     }
 }

@@ -16,25 +16,11 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
     {
         private readonly HttpClient _client;
 
-        private async Task<(HttpResponseMessage, Category)> CreateTestCategory(CategoryDto categoryDto)
+        private readonly CategoryDto _testCategoryDto = new()
         {
-            var response = await _client.PostAsJsonAsync("/api/categories", categoryDto);
-            Category category = null;
-
-            if (response.IsSuccessStatusCode)
-            {
-                category = JsonConvert.DeserializeObject<Category>(
-                    await response.Content.ReadAsStringAsync()
-                );
-            }
-            return (response, category);
-        }
-
-        private async Task<HttpResponseMessage> DeleteTestCategory(int categoryId)
-        {
-            var response = await _client.DeleteAsync($"/api/categories/{categoryId}");
-            return response;
-        }
+            CategoryName = "Test",
+            Description = "Test category"
+        };
 
         public CategoriesControllerTests(WebApplicationFactory<Startup> fixture)
         {
@@ -75,28 +61,20 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         [Fact]
         public async Task Create_WithValidInput_ReturnsCreatedCategory()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = "Test",
-                Description = "Test category"
-            };
-
-            (HttpResponseMessage Response, Category Category) result = await CreateTestCategory(categoryDto);
+            (HttpResponseMessage Response, Category Category) result = await CreateTestCategory(_testCategoryDto);
             result.Response.StatusCode.Should().Be(HttpStatusCode.Created);
             await DeleteTestCategory(result.Category.CategoryId);
 
             result.Response.Headers.Location.PathAndQuery.Should().Be($"/api/categories/{result.Category.CategoryId}");
-            result.Category.CategoryName.Should().Be(categoryDto.CategoryName);
-            result.Category.Description.Should().Be(categoryDto.Description);
+            result.Category.CategoryName.Should().Be(_testCategoryDto.CategoryName);
+            result.Category.Description.Should().Be(_testCategoryDto.Description);
         }
 
         [Fact]
         public async Task Create_WithInvalidInput_ReturnsBadRequest()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = null
-            };
+            var categoryDto = _testCategoryDto.Clone();
+            categoryDto.CategoryName = null;
 
             (HttpResponseMessage Response, Category Category) createResult = await CreateTestCategory(categoryDto);
             createResult.Response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -105,17 +83,10 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         [Fact]
         public async Task Update_WithValidIdAndInput_ReturnsUpdatedCategory()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = "Test",
-                Description = "Test category"
-            };
+            var categoryDto = _testCategoryDto.Clone();
 
             (HttpResponseMessage Response, Category Category) createResult = await CreateTestCategory(categoryDto);
             createResult.Response.StatusCode.Should().Be(HttpStatusCode.Created);
-            createResult.Response.Headers.Location.PathAndQuery.Should().Be($"/api/categories/{createResult.Category.CategoryId}");
-            createResult.Category.CategoryName.Should().Be(categoryDto.CategoryName);
-            createResult.Category.Description.Should().Be(categoryDto.Description);
 
             categoryDto.CategoryName = "Updated Test";
             categoryDto.Description = "Updated test category";
@@ -136,23 +107,15 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         [Fact]
         public async Task Update_WithInvalidId_ReturnsNotFoundResponse()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = "Test",
-                Description = "Test category"
-            };
-
-            var response = await _client.PutAsJsonAsync("/api/categories/999", categoryDto);
+            var response = await _client.PutAsJsonAsync("/api/categories/999", _testCategoryDto);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
         public async Task Update_WithInvalidInput_ReturnsBadRequest()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = null
-            };
+            var categoryDto = _testCategoryDto.Clone();
+            categoryDto.CategoryName = null;
 
             var response = await _client.PutAsJsonAsync("/api/categories/999", categoryDto);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -161,17 +124,10 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_WithValidId_ReturnsDeletedCategory()
         {
-            var categoryDto = new CategoryDto
-            {
-                CategoryName = "Test",
-                Description = "Test category"
-            };
+            var categoryDto = _testCategoryDto.Clone();
 
             (HttpResponseMessage Response, Category Category) createResult = await CreateTestCategory(categoryDto);
             createResult.Response.StatusCode.Should().Be(HttpStatusCode.Created);
-            createResult.Response.Headers.Location.PathAndQuery.Should().Be($"/api/categories/{createResult.Category.CategoryId}");
-            createResult.Category.CategoryName.Should().Be(categoryDto.CategoryName);
-            createResult.Category.Description.Should().Be(categoryDto.Description);
 
             var response = await DeleteTestCategory(createResult.Category.CategoryId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -190,6 +146,26 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
         {
             var response = await _client.DeleteAsync("/api/categories/999");
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        private async Task<(HttpResponseMessage, Category)> CreateTestCategory(CategoryDto categoryDto)
+        {
+            var response = await _client.PostAsJsonAsync("/api/categories", categoryDto);
+            Category category = null;
+
+            if (response.IsSuccessStatusCode)
+            {
+                category = JsonConvert.DeserializeObject<Category>(
+                    await response.Content.ReadAsStringAsync()
+                );
+            }
+            return (response, category);
+        }
+
+        private async Task<HttpResponseMessage> DeleteTestCategory(int categoryId)
+        {
+            var response = await _client.DeleteAsync($"/api/categories/{categoryId}");
+            return response;
         }
     }
 }

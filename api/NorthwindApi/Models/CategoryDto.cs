@@ -13,5 +13,10 @@ namespace NorthwindApi.Models
         public string Description { get; set; }
 
         public byte[] Picture { get; set; }
+
+        public CategoryDto Clone()
+        {
+            return (CategoryDto)MemberwiseClone();
+        }
     }
 }
