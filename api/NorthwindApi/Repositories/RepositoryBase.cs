@@ -1,15 +1,14 @@
 using AutoMapper;
-using NorthwindApi.Repositories;
 using Sieve.Models;
 using Sieve.Services;
 
-namespace NorthwindApi.Services
+namespace NorthwindApi.Repositories
 {
-    public abstract class ServiceBase
+    public abstract class RepositoryBase
     {
         protected readonly NorthwindContext _context;
         protected readonly IMapper _mapper;
-        protected readonly SieveProcessor _sieveProcessor;
+        protected readonly ISieveProcessor _sieveProcessor;
 
         protected SieveModel CreateSieveModel(string filters, string sorts, string defaultSorts)
         {
@@ -21,7 +20,7 @@ namespace NorthwindApi.Services
             return sieveModel;
         }
 
-        public ServiceBase(NorthwindContext context, IMapper mapper, SieveProcessor sieveProcessor)
+        public RepositoryBase(NorthwindContext context, IMapper mapper, ISieveProcessor sieveProcessor)
         {
             _context = context;
             _mapper = mapper;

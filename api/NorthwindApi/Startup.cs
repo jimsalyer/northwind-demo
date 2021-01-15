@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NorthwindApi.Repositories;
-using NorthwindApi.Services;
 using Sieve.Services;
 
 namespace NorthwindApi
@@ -29,11 +28,10 @@ namespace NorthwindApi
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddScoped<SieveProcessor>();
-
-            services.AddTransient<CategoryService>();
-            services.AddTransient<ProductService>();
-            services.AddTransient<SupplierService>();
+            services.AddScoped<ISieveProcessor, SieveProcessor>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
 
             services.AddControllers();
 

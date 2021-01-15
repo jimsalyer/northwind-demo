@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindApi.Models;
-using NorthwindApi.Services;
+using NorthwindApi.Repositories;
 
 namespace NorthwindApi.Controllers
 {
@@ -10,24 +10,24 @@ namespace NorthwindApi.Controllers
     [Route("api/suppliers")]
     public class SuppliersController : ControllerBase
     {
-        private readonly SupplierService _supplierService;
+        private readonly ISupplierRepository _supplierRepository;
 
-        public SuppliersController(SupplierService supplierService)
+        public SuppliersController(ISupplierRepository supplierRepository)
         {
-            _supplierService = supplierService;
+            _supplierRepository = supplierRepository;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Supplier>> GetAll(string filters, string sorts)
+        public ActionResult<IEnumerable<Supplier>> List(string filters, string sorts)
         {
-            return _supplierService.ListSuppliers(filters, sorts);
+            return _supplierRepository.List(filters, sorts);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Supplier> GetById(int id)
         {
-            var supplier = _supplierService.GetSupplier(id);
+            var supplier = _supplierRepository.GetById(id);
             if (supplier != null)
             {
                 return supplier;
@@ -42,7 +42,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var supplier = _supplierService.CreateSupplier(supplierDto);
+                var supplier = _supplierRepository.Add(supplierDto);
                 return CreatedAtAction(nameof(GetById), new { id = supplier.SupplierId }, supplier);
             }
             return BadRequest();
@@ -55,7 +55,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var supplier = _supplierService.UpdateSupplier(id, supplierDto);
+                var supplier = _supplierRepository.Update(id, supplierDto);
                 if (supplier != null)
                 {
                     return supplier;
@@ -69,7 +69,7 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Supplier> Delete(int id)
         {
-            var supplier = _supplierService.DeleteSupplier(id);
+            var supplier = _supplierRepository.Delete(id);
             if (supplier != null)
             {
                 return supplier;
@@ -81,7 +81,7 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<Product>> GetProducts(int id, string filters, string sorts)
         {
-            var products = _supplierService.ListProducts(id, filters, sorts);
+            var products = _supplierRepository.ListProducts(id, filters, sorts);
             if (products != null)
             {
                 return products;

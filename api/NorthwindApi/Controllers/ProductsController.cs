@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindApi.Models;
-using NorthwindApi.Services;
+using NorthwindApi.Repositories;
 
 namespace NorthwindApi.Controllers
 {
@@ -10,24 +10,24 @@ namespace NorthwindApi.Controllers
     [Route("api/products")]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductService _productService;
+        private readonly IProductRepository _productRepository;
 
-        public ProductsController(ProductService productService)
+        public ProductsController(IProductRepository productRepository)
         {
-            _productService = productService;
+            _productRepository = productRepository;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetAll(string filters, string sorts)
+        public ActionResult<IEnumerable<Product>> List(string filters, string sorts)
         {
-            return _productService.ListProducts(filters, sorts);
+            return _productRepository.List(filters, sorts);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Product> GetById(int id)
         {
-            var product = _productService.GetProduct(id);
+            var product = _productRepository.GetById(id);
             if (product != null)
             {
                 return product;
@@ -42,7 +42,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = _productService.CreateProduct(productDto);
+                var product = _productRepository.Add(productDto);
                 return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, product);
             }
             return BadRequest();
@@ -55,7 +55,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = _productService.UpdateProduct(id, productDto);
+                var product = _productRepository.Update(id, productDto);
                 if (product != null)
                 {
                     return product;
@@ -69,7 +69,7 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Product> Delete(int id)
         {
-            var product = _productService.DeleteProduct(id);
+            var product = _productRepository.Delete(id);
             if (product != null)
             {
                 return product;

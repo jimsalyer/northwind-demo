@@ -10,7 +10,7 @@
     "db-stop": "cd ./db && docker-compose down -v",
     "install": "cd ./api && dotnet restore",
     "start": "npm run db-start && npm run api-start",
-    "test": "npm run api-test",
+    "test": "npm run db-start && npm run api-test",
     "watch": "npm run db-start && npm run api-watch"
   }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindApi.Models;
-using NorthwindApi.Services;
+using NorthwindApi.Repositories;
 
 namespace NorthwindApi.Controllers
 {
@@ -10,24 +10,24 @@ namespace NorthwindApi.Controllers
     [Route("api/categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly CategoryService _categoryService;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoriesController(CategoryService categoryService)
+        public CategoriesController(ICategoryRepository categoryRepository)
         {
-            _categoryService = categoryService;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Category>> GetAll(string filters, string sorts)
+        public ActionResult<IEnumerable<Category>> List(string filters, string sorts)
         {
-            return _categoryService.ListCategories(filters, sorts);
+            return _categoryRepository.List(filters, sorts);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Category> GetById(int id)
         {
-            var category = _categoryService.GetCategory(id);
+            var category = _categoryRepository.GetById(id);
             if (category != null)
             {
                 return category;
@@ -42,7 +42,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var category = _categoryService.CreateCategory(categoryDto);
+                var category = _categoryRepository.Add(categoryDto);
                 return CreatedAtAction(nameof(GetById), new { id = category.CategoryId }, category);
             }
             return BadRequest();
@@ -55,7 +55,7 @@ namespace NorthwindApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var category = _categoryService.UpdateCategory(id, categoryDto);
+                var category = _categoryRepository.Update(id, categoryDto);
                 if (category != null)
                 {
                     return category;
@@ -69,7 +69,7 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Category> Delete(int id)
         {
-            var category = _categoryService.DeleteCategory(id);
+            var category = _categoryRepository.Delete(id);
             if (category != null)
             {
                 return category;
@@ -81,7 +81,7 @@ namespace NorthwindApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<Product>> GetProducts(int id, string filters, string sorts)
         {
-            var products = _categoryService.ListProducts(id, filters, sorts);
+            var products = _categoryRepository.ListProducts(id, filters, sorts);
             if (products != null)
             {
                 return products;

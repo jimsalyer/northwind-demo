@@ -3,19 +3,18 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NorthwindApi.Models;
-using NorthwindApi.Repositories;
 using Sieve.Services;
 
-namespace NorthwindApi.Services
+namespace NorthwindApi.Repositories
 {
-    public class ProductService : ServiceBase
+    public class ProductRepository : RepositoryBase, IProductRepository
     {
-        public ProductService(NorthwindContext context, IMapper mapper, SieveProcessor sieveProcessor)
+        public ProductRepository(NorthwindContext context, IMapper mapper, ISieveProcessor sieveProcessor)
             : base(context, mapper, sieveProcessor)
         {
         }
 
-        public List<Product> ListProducts(string filters, string sorts)
+        public List<Product> List(string filters, string sorts)
         {
             var sieveModel = CreateSieveModel(filters, sorts, "productName");
             var products = _context.Products?.AsNoTracking();
@@ -23,15 +22,15 @@ namespace NorthwindApi.Services
             return productsResult.ToList();
         }
 
-        public Product GetProduct(int productId)
+        public Product GetById(int id)
         {
             var product = _context.Products
                 .AsNoTracking()
-                .FirstOrDefault(c => c.ProductId == productId);
+                .FirstOrDefault(c => c.ProductId == id);
             return product;
         }
 
-        public Product CreateProduct(ProductDto productDto)
+        public Product Add(ProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
             product.ProductId = _context.Products.Any() ? _context.Products.Max(c => c.ProductId) + 1 : 1;
@@ -41,9 +40,9 @@ namespace NorthwindApi.Services
             return product;
         }
 
-        public Product UpdateProduct(int productId, ProductDto productDto)
+        public Product Update(int id, ProductDto productDto)
         {
-            var product = _context.Products.Find(productId);
+            var product = _context.Products.Find(id);
             if (product != null)
             {
                 _mapper.Map(productDto, product);
@@ -53,7 +52,7 @@ namespace NorthwindApi.Services
             return product;
         }
 
-        public Product DeleteProduct(int productId)
+        public Product Delete(int productId)
         {
             var product = _context.Products.Find(productId);
             if (product != null)
