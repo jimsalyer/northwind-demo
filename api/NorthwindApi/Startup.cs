@@ -32,6 +32,7 @@ namespace NorthwindApi
             services.AddScoped<SieveProcessor>();
 
             services.AddTransient<CategoryService>();
+            services.AddTransient<ProductService>();
             services.AddTransient<SupplierService>();
 
             services.AddControllers();

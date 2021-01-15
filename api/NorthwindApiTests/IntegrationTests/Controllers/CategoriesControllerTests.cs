@@ -17,8 +17,8 @@ namespace NorthwindApiTests.IntegrationTests.Controllers
 
         private readonly CategoryDto _testCategoryDto = new()
         {
-            CategoryName = "Test",
-            Description = "Test category"
+            CategoryName = "Test category",
+            Description = "Test description"
         };
 
         public CategoriesControllerTests(WebApplicationFactory<Startup> fixture)
