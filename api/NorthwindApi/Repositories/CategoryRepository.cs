@@ -9,7 +9,7 @@ namespace NorthwindApi.Repositories
 {
     public class CategoryRepository : RepositoryBase, ICategoryRepository
     {
-        public CategoryRepository(NorthwindContext context, IMapper mapper, ISieveProcessor sieveProcessor)
+        public CategoryRepository(NorthwindDbContext context, IMapper mapper, ISieveProcessor sieveProcessor)
             : base(context, mapper, sieveProcessor)
         {
         }

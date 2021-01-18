@@ -6,7 +6,7 @@ namespace NorthwindApi.Repositories
 {
     public abstract class RepositoryBase
     {
-        protected readonly NorthwindContext _context;
+        protected readonly NorthwindDbContext _context;
         protected readonly IMapper _mapper;
         protected readonly ISieveProcessor _sieveProcessor;
 
@@ -20,7 +20,7 @@ namespace NorthwindApi.Repositories
             return sieveModel;
         }
 
-        public RepositoryBase(NorthwindContext context, IMapper mapper, ISieveProcessor sieveProcessor)
+        public RepositoryBase(NorthwindDbContext context, IMapper mapper, ISieveProcessor sieveProcessor)
         {
             _context = context;
             _mapper = mapper;

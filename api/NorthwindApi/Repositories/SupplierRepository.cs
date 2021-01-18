@@ -9,7 +9,7 @@ namespace NorthwindApi.Repositories
 {
     public class SupplierRepository : RepositoryBase, ISupplierRepository
     {
-        public SupplierRepository(NorthwindContext context, IMapper mapper, ISieveProcessor sieveProcessor)
+        public SupplierRepository(NorthwindDbContext context, IMapper mapper, ISieveProcessor sieveProcessor)
             : base(context, mapper, sieveProcessor)
         {
         }

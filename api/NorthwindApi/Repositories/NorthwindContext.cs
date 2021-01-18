@@ -3,13 +3,13 @@ using NorthwindApi.Models;
 
 namespace NorthwindApi.Repositories
 {
-    public class NorthwindContext : DbContext
+    public class NorthwindDbContext : DbContext
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
 
-        public NorthwindContext(DbContextOptions<NorthwindContext> options)
+        public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)
         {
         }
